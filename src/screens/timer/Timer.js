@@ -1,41 +1,56 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Modal } from 'react-native';
+import { useState } from 'react';
 
 import { CustomButton } from '../../components';
+import TimerModal from './TimerModal';
 
 const Timer = () => {
-    const [timer, setTimer] = useState({ secs: '10', mins: '45', hours: '0' });
+    const [timer, setTimer] = useState({ secs: '0', mins: '0', hours: '0' });
     const [interv, setInterv] = useState();
-
-    let updateS = timer.secs;
-    let updateM = timer.mins;
-    let updateH = timer.hours;
+    const [showModal, setShowModal] = useState(false);
 
     const startTimer = () => {
         updateTimer();
         setInterv(setInterval(updateTimer, 1000));
     };
 
+    let updateM = timer.mins,
+        updateS = timer.secs,
+        updateH = timer.hours;
+
     const updateTimer = () => {
-        if (updateM === 0) {
+        // if(timer.secs === 0) {
+        //     if()
+        // }
+        if (updateM === 0 && updateS === 0) {
             updateH--;
             updateM = 60;
         }
-        if (updateS === 0) {
+        if (updateS === 0 && updateM > 0) {
             updateM--;
             updateS = 60;
         }
         updateS--;
 
-        if (updateS === 0 && updateM === 0 && updateH === 0) {
-            alert('Time is over');
-            return;
-        }
-        return setTimer({ secs: updateS, mins: updateM, hours: updateH });
+        // if (updateS === 0 && updateM === 0 && updateH === 0) {
+        //     alert('Time is over');
+        //     stopTimer();
+        // } else {
+        // }
+        return setTimer({
+            secs: updateS,
+            mins: updateM,
+            hours: updateH,
+        });
     };
 
     const stopTimer = () => {
         clearInterval(interv);
+    };
+
+    const resetTimer = () => {
+        clearInterval(interv);
+        setTimer({ secs: '0', mins: '0', hours: '0' });
     };
 
     return (
@@ -48,8 +63,11 @@ const Timer = () => {
                 </Text>
             </View>
             <View style={styles.addTime}>
-                <Text style={styles.addTimeText}>Setting Time</Text>
-                <CustomButton title="play" backgroundColor="#26b3a8" />
+                <CustomButton
+                    title="init timer"
+                    backgroundColor="#26b3a8"
+                    onPress={() => setShowModal(true)}
+                />
             </View>
             <View style={styles.actionBtn}>
                 <CustomButton
@@ -62,7 +80,20 @@ const Timer = () => {
                     backgroundColor="#26b3a8"
                     onPress={stopTimer}
                 />
+                <CustomButton
+                    title="reset"
+                    backgroundColor="#26b3a8"
+                    onPress={resetTimer}
+                />
             </View>
+
+            <Modal transparent={true} animationType="fade" visible={showModal}>
+                <TimerModal
+                    setShowModal={setShowModal}
+                    setTimer={setTimer}
+                    timer={timer}
+                />
+            </Modal>
         </View>
     );
 };
@@ -87,9 +118,6 @@ const styles = StyleSheet.create({
     addTime: {
         flex: 2,
         display: 'flex',
-    },
-    addTimeText: {
-        textAlign: 'center',
     },
     actionBtn: {
         width: '100%',

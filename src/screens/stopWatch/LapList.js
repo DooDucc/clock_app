@@ -3,14 +3,16 @@ import React from 'react';
 
 import LapItem from './LapItem';
 
-const LapList = ({ lapList, timer }) => {
+const LapList = ({ laps, currentTime }) => {
     return (
         <ScrollView>
-            {lapList.map((lap, index) => (
+            {laps.map((lap, index) => (
                 <LapItem
-                    turn={lapList.length - index}
-                    key={lapList.length - index}
-                    interval={index === 0 ? timer + lap : lap}
+                    turn={laps.length - index}
+                    key={laps.length - index}
+                    interval={
+                        index === 0 ? currentTime.now - currentTime.start : lap
+                    }
                 />
             ))}
         </ScrollView>

@@ -1,35 +1,23 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { addAlarm } from '../../redux/actions';
 import { CustomButton } from '../../components';
 
-const AlarmModal = ({ setShowModal }) => {
-    const [hour, setHour] = useState('');
-    const [minutes, setMinutes] = useState('');
-    const [action, setAction] = useState('');
-
-    const dispatch = useDispatch();
-
-    const handleAddAlarm = () => {
-        if (
-            Number.isInteger(parseInt(hour)) === true &&
-            Number.isInteger(parseInt(hour)) > 0 &&
-            Number.isInteger(parseInt(hour)) <= 24 &&
-            Number.isInteger(parseInt(minutes)) === true &&
-            Number.isInteger(parseInt(minutes)) > 0 &&
-            Number.isInteger(parseInt(minutes)) <= 60
-        ) {
-            dispatch(
-                addAlarm({
-                    hour: hour,
-                    minutes: minutes,
-                    action: action,
-                }),
-            );
-        } else {
-            alert('Please enter valid value');
+const TimerModal = ({ setShowModal, setTimer }) => {
+    const [initTime, setInitTime] = useState({
+        secs: '0',
+        mins: '0',
+        hours: '0',
+    });
+    const handleInitTimer = () => {
+        if (initTime.hours !== undefined) {
+            setTimer({ ...initTime, hours: initTime.hours });
+        }
+        if (initTime.mins !== undefined) {
+            setTimer({ ...initTime, mins: initTime.mins });
+        }
+        if (initTime.secs !== undefined) {
+            setTimer({ ...initTime, secs: initTime.secs });
         }
 
         setShowModal(false);
@@ -43,10 +31,13 @@ const AlarmModal = ({ setShowModal }) => {
                         <Text style={styles.text}>Hour</Text>
                         <TextInput
                             style={styles.input}
+                            type="number"
                             keyboardType="numeric"
                             placeholder="Enter hour..."
                             placeholderTextColor="#999"
-                            onChangeText={(e) => setHour(e)}
+                            onChangeText={(e) =>
+                                setInitTime({ ...initTime, hours: e })
+                            }
                         />
                     </View>
                     <View style={styles.field}>
@@ -54,23 +45,40 @@ const AlarmModal = ({ setShowModal }) => {
                         <TextInput
                             style={styles.input}
                             keyboardType="numeric"
+                            type="number"
                             placeholder="Enter minutes..."
                             placeholderTextColor="#999"
-                            onChangeText={(e) => setMinutes(e)}
+                            onChangeText={(e) =>
+                                setInitTime({ ...initTime, mins: e })
+                            }
                         />
                     </View>
                     <View style={styles.field}>
-                        <Text style={styles.text}>Action</Text>
+                        <Text style={styles.text}>Seconds</Text>
                         <TextInput
                             style={styles.input}
                             keyboardType="numeric"
-                            placeholder="Enter action..."
+                            type="number"
+                            placeholder="Enter second..."
                             placeholderTextColor="#999"
-                            onChangeText={(e) => setAction(e)}
+                            onChangeText={(e) =>
+                                setInitTime({ ...initTime, secs: e })
+                            }
                         />
                     </View>
                 </View>
-                <CustomButton title="set alarm" backgroundColor="#6262f9" onPress={handleAddAlarm} />
+                <View style={styles.btnContainer}>
+                    <CustomButton
+                        title="cancel"
+                        backgroundColor="#26b3a8"
+                        onPress={() => setShowModal(false)}
+                    />
+                    <CustomButton
+                        title="set timer"
+                        backgroundColor="#26b3a8"
+                        onPress={handleInitTimer}
+                    />
+                </View>
             </View>
         </View>
     );
@@ -121,6 +129,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 10,
     },
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        width: '100%',
+    },
 });
 
-export default AlarmModal;
+export default TimerModal;

@@ -5,48 +5,48 @@ import { CustomButton } from '../../components';
 import StopWatchTime from './StopWatchTime';
 import LapList from './LapList';
 
-const StopWatch = () => {
-    const [start, setStart] = useState(0);
-    const [now, setNow] = useState(0);
-    const [lapList, setLapList] = useState([]);
+let timeId = null;
 
-    let timer = now - start;
+const StopWatch = () => {
+    const [timer, setTimer] = useState({ start: 0, now: 0, laps: [] });
 
     const startStopWatch = () => {
         const currentTime = new Date().getTime();
-        setStart(currentTime);
-        setNow(currentTime);
-        setLapList([0]);
-        timer = setInterval(() => {
-            setNow(new Date().getTime());
+        timeId = setInterval(() => {
+            setTimer((prev) => {
+                return {
+                    ...prev,
+                    start: currentTime,
+                    now: new Date().getTime(),
+                };
+            });
         }, 100);
     };
 
     const stopStopWatch = () => {
-        clearInterval(timer);
-        const [firstlap, ...rest] = lapList;
-        setStart(0);
-        setNow(0);
-        setLapList([firstlap + now - start, ...rest]);
+        clearInterval(timeId);
+        setTimer({ start: 0, now: 0, laps: [] });
     };
 
     const lapStopWatch = () => {
-        const tmpTime = new Date().getTime();
-        const [firstLap, ...rest] = lapList;
-        setLapList([0, firstLap + now - start, ...rest]);
-        setStart(tmpTime);
-        setNow(tmpTime);
+        const [firstLap, ...rest] = timer.laps;
+        setTimer({
+            ...timer,
+            laps: [0, timer.now - timer.start, ...rest],
+        });
     };
+
+    useEffect(() => {
+        return () => clearInterval(timeId);
+    }, []);
 
     return (
         <View style={styles.container}>
             <View style={styles.time}>
-                <StopWatchTime
-                    interval={lapList.reduce((a, b) => a + b, 0) + timer}
-                />
+                <StopWatchTime interval={timer.now - timer.start} />
             </View>
             <View style={styles.listTime}>
-                <LapList lapList={lapList} timer={timer} />
+                <LapList laps={timer.laps} currentTime={timer} />
             </View>
             <View style={styles.actionBtn}>
                 <CustomButton
