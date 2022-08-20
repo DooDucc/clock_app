@@ -5,14 +5,14 @@ import { CustomButton } from '../../components';
 import StopWatchTime from './StopWatchTime';
 import LapList from './LapList';
 
-let timeId = null;
-
 const StopWatch = () => {
     const [timer, setTimer] = useState({ start: 0, now: 0, laps: [] });
 
+    const timerId = useRef(null);
+
     const startStopWatch = () => {
         const currentTime = new Date().getTime();
-        timeId = setInterval(() => {
+        timerId.current = setInterval(() => {
             setTimer((prev) => {
                 return {
                     ...prev,
@@ -24,8 +24,7 @@ const StopWatch = () => {
     };
 
     const stopStopWatch = () => {
-        clearInterval(timeId);
-        setTimer({ start: 0, now: 0, laps: [] });
+        clearInterval(timerId.current);
     };
 
     const lapStopWatch = () => {
@@ -36,8 +35,13 @@ const StopWatch = () => {
         });
     };
 
+    const resetStopWatch = () => {
+        stopStopWatch();
+        setTimer({ start: 0, now: 0, laps: [] });
+    };
+
     useEffect(() => {
-        return () => clearInterval(timeId);
+        return () => clearInterval(timerId.current);
     }, []);
 
     return (
@@ -49,20 +53,29 @@ const StopWatch = () => {
                 <LapList laps={timer.laps} currentTime={timer} />
             </View>
             <View style={styles.actionBtn}>
-                <CustomButton
-                    title="start"
-                    backgroundColor="#fc8827"
-                    onPress={startStopWatch}
-                />
-                <CustomButton
-                    title="stop"
-                    backgroundColor="#fc8827"
-                    onPress={stopStopWatch}
-                />
+                {timer.start === 0 && (
+                    <CustomButton
+                        title="start"
+                        backgroundColor="#fc8827"
+                        onPress={startStopWatch}
+                    />
+                )}
+                {timer.start > 0 && (
+                    <CustomButton
+                        title="stop"
+                        backgroundColor="#fc8827"
+                        onPress={stopStopWatch}
+                    />
+                )}
                 <CustomButton
                     title="lap"
                     backgroundColor="#fc8827"
                     onPress={lapStopWatch}
+                />
+                <CustomButton
+                    title="reset"
+                    backgroundColor="#fc8827"
+                    onPress={resetStopWatch}
                 />
             </View>
         </View>
@@ -72,7 +85,6 @@ const StopWatch = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fff',
     },

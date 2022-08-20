@@ -9,16 +9,31 @@ const TimerModal = ({ setShowModal, setTimer }) => {
         mins: '0',
         hours: '0',
     });
-    const handleInitTimer = () => {
-        if (initTime.hours !== undefined) {
-            setTimer({ ...initTime, hours: initTime.hours });
-        }
-        if (initTime.mins !== undefined) {
-            setTimer({ ...initTime, mins: initTime.mins });
-        }
-        if (initTime.secs !== undefined) {
-            setTimer({ ...initTime, secs: initTime.secs });
-        }
+    const handleSetTimer = () => {
+        // if (initTime.hours !== undefined) {
+        //     setTimer((prev) => {
+        //         return { ...prev, hours: initTime.hours };
+        //     });
+        // }
+        // if (initTime.mins !== undefined) {
+        //     setTimer((prev) => {
+        //         return { ...prev, mins: initTime.mins };
+        //     });
+        // }
+        // if (initTime.secs !== undefined) {
+        //     setTimer((prev) => {
+        //         return { ...prev, secs: initTime.secs };
+        //     });
+        // }
+
+        setTimer((prev) => {
+            return {
+                ...prev,
+                secs: initTime.secs,
+                mins: initTime.mins,
+                hours: initTime.hours,
+            };
+        });
 
         setShowModal(false);
     };
@@ -36,7 +51,9 @@ const TimerModal = ({ setShowModal, setTimer }) => {
                             placeholder="Enter hour..."
                             placeholderTextColor="#999"
                             onChangeText={(e) =>
-                                setInitTime({ ...initTime, hours: e })
+                                setInitTime((prev) => {
+                                    return { ...prev, hours: e };
+                                })
                             }
                         />
                     </View>
@@ -49,7 +66,9 @@ const TimerModal = ({ setShowModal, setTimer }) => {
                             placeholder="Enter minutes..."
                             placeholderTextColor="#999"
                             onChangeText={(e) =>
-                                setInitTime({ ...initTime, mins: e })
+                                setInitTime((prev) => {
+                                    return { ...prev, mins: e };
+                                })
                             }
                         />
                     </View>
@@ -62,7 +81,9 @@ const TimerModal = ({ setShowModal, setTimer }) => {
                             placeholder="Enter second..."
                             placeholderTextColor="#999"
                             onChangeText={(e) =>
-                                setInitTime({ ...initTime, secs: e })
+                                setInitTime((prev) => {
+                                    return { ...prev, secs: e };
+                                })
                             }
                         />
                     </View>
@@ -76,7 +97,7 @@ const TimerModal = ({ setShowModal, setTimer }) => {
                     <CustomButton
                         title="set timer"
                         backgroundColor="#26b3a8"
-                        onPress={handleInitTimer}
+                        onPress={handleSetTimer}
                     />
                 </View>
             </View>

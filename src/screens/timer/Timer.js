@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, Text, StyleSheet, Modal, Alert } from 'react-native';
 import { useState } from 'react';
 
 import { CustomButton } from '../../components';
@@ -14,33 +14,33 @@ const Timer = () => {
         setInterv(setInterval(updateTimer, 1000));
     };
 
-    let updateM = timer.mins,
-        updateS = timer.secs,
-        updateH = timer.hours;
-
     const updateTimer = () => {
-        // if(timer.secs === 0) {
-        //     if()
-        // }
-        if (updateM === 0 && updateS === 0) {
-            updateH--;
-            updateM = 60;
+        if (parseInt(timer.secs) === 0) {
+            if (parseInt(timer.mins) === 0) {
+                if (parseInt(timer.hours) > 0) {
+                    timer.hours--;
+                    timer.mins = 60;
+                    timer.secs = 60;
+                }
+            }
+            if (parseInt(timer.mins) > 0) {
+                timer.mins--;
+                timer.secs = 60;
+            }
         }
-        if (updateS === 0 && updateM > 0) {
-            updateM--;
-            updateS = 60;
-        }
-        updateS--;
 
-        // if (updateS === 0 && updateM === 0 && updateH === 0) {
-        //     alert('Time is over');
-        //     stopTimer();
-        // } else {
-        // }
+        if (parseInt(timer.secs) > 0) {
+            timer.secs--;
+        }
+
+        if (parseInt(timer.secs) < 0) {
+            resetTimer();
+        }
+
         return setTimer({
-            secs: updateS,
-            mins: updateM,
-            hours: updateH,
+            secs: timer.secs,
+            mins: timer.mins,
+            hours: timer.hours,
         });
     };
 
@@ -64,7 +64,7 @@ const Timer = () => {
             </View>
             <View style={styles.addTime}>
                 <CustomButton
-                    title="init timer"
+                    title="set timer"
                     backgroundColor="#26b3a8"
                     onPress={() => setShowModal(true)}
                 />
